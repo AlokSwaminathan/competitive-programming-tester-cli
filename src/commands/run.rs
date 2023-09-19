@@ -115,6 +115,7 @@ impl RunDir {
     }
     pub fn run(&mut self) -> Result<(), String> {
         for (name, case) in self.test.case_iter() {
+            print!("Test Case {}: ", name);
             let run_command = &mut self.run_command.0;
             if let Some(file) = &self.input_file {
                 case.write_input(file, name)?;
@@ -130,19 +131,19 @@ impl RunDir {
             let mut run_command = handle_error!(run_command.spawn(), "Failed to spawn thread for program");
             let now = Instant::now();
             let output = handle_error!(run_command.wait_timeout(timeout), "Failed to wait for program to finish");
-            let exit_status = match output {
-                Some(output) => output,
-                None => {
-                    return Err(format!(
-                        "\nProgram timed out after {} milliseconds, if you want to change the timeout, use the --timeout flag",
-                        self.timeout
-                    ))
-                }
-            };
             let time_taken = now.elapsed().as_millis();
 
-            // let output = handle_error!(run_command.output(), "Failed to run program");
+            if output.is_none() {
+                println!("Program timed out in {} ms", timeout.as_millis());
+                let fail_symbol = match self.unicode_output {
+                    true => "\x1b[31m❌\x1b[0m",
+                    false => "FAILED",
+                };
+                println!("{}", fail_symbol);
+                continue;
+            }
 
+            let exit_status = output.unwrap();
             if !exit_status.success() {
                 return Err(format!("\nProgram exited with non-zero exit code: {}", exit_status.code().unwrap()));
             }
@@ -152,7 +153,6 @@ impl RunDir {
                 run_command.stdout.take().unwrap().bytes().map(|b| b.unwrap()).collect::<Vec<u8>>()
             };
             let output = handle_error!(String::from_utf8(output), "Failed to turn output into valid UTF-8");
-            print!("Test Case {}: ", name);
             handle_error!(io::stdout().flush(), "\nFailed to flush stdout");
             if self.show_input {
                 println!();
@@ -172,7 +172,7 @@ impl RunDir {
                 println!("Program Output:");
                 println!("{}", output.lines().map(|l| format!("\t{}", l)).collect::<Vec<String>>().join("\n"));
             }
-            println!("Time Taken: {} milliseconds", time_taken);
+            println!("{} milliseconds", time_taken);
             let pass_symbol = match self.unicode_output {
                 true => "✅",
                 false => "PASSED",

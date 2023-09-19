@@ -12,28 +12,34 @@ pub struct ListArgs {
     #[command(subcommand)]
     pub command: Option<ListCommands>,
 
-    #[arg(long,help="Show input and output types, as well as file names(If applicable), for each test")]
+    #[arg(long, help = "Show input and output types, as well as file names(If applicable), for each test")]
     show_io: bool,
 }
 
 #[derive(Subcommand, Debug)]
 pub enum ListCommands {
-    #[command(about="List all test names, or all/some test cases for a specific test")]
+    #[command(about = "List all test case names, or all/some test cases for a specific test")]
     TEST(ListTestArgs),
 }
 
 #[derive(Args, Debug)]
 pub struct ListTestArgs {
-    #[arg(help="The name of the test to list cases for")]
+    #[arg(help = "The name of the test to list cases for")]
     test: String,
 
-    #[arg(short = 'i', long,help="Show input for each test case(Input can be very large)")]
+    #[arg(short = 'i', long, help = "Show input for each test case(Input can be very large)")]
     show_input: bool,
 
-    #[arg(short = 'o', long,help="Show desired output for each test case")]
+    #[arg(short = 'o', long, help = "Show desired output for each test case")]
     show_output: bool,
 
-    #[arg(short, long, requires = "test", value_delimiter = ',',help="The name of the test case to list. \nIf multiple test cases are specified(Use a comma between cases), all of them will be listed. \nIf not specified, all test cases will be listed")]
+    #[arg(
+        short,
+        long,
+        requires = "test",
+        value_delimiter = ',',
+        help = "The name of the test case to list. \nIf multiple test cases are specified(Use a comma between cases), all of them will be listed. \nIf not specified, all test cases will be listed"
+    )]
     cases: Option<Vec<String>>,
 }
 

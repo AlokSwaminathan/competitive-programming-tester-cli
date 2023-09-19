@@ -5,7 +5,13 @@ use serde::{Deserialize, Serialize};
 use crate::{handle_error, handle_option, DEFAULT_FOLDER_NAME};
 
 const DEFAULT_CPP_VER: i32 = 17;
-const DEFAULT_TIME_LIMIT: u64= 5000;
+const DEFAULT_TIME_LIMIT: u64 = 5000;
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ConfigFile {
+    default_config: Config,
+    tags: HashMap<String, Option<Config>>,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -150,7 +156,7 @@ impl fmt::Display for Config {
         write!(
             f,
             "Default C++ version: {}\nUnicode output: {}\nDefault time limit: {} ms\nGCC flags: {}\nG++ flags: {}",
-            self.default_cpp_ver, self.unicode_output,self.default_time_limit, gcc_flags, gpp_flags
+            self.default_cpp_ver, self.unicode_output, self.default_time_limit, gcc_flags, gpp_flags
         )
     }
 }

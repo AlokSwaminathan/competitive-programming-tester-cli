@@ -1,3 +1,4 @@
+use crate::program_data::ProgramData;
 use crate::test_data::IOType;
 use crate::{handle_error, handle_option};
 use clap::Args;
@@ -37,12 +38,14 @@ pub struct AddArgs {
     #[arg(requires = "input")]
     pub name: Option<String>,
 
-    #[arg(long, requires = "input",value_delimiter=',')]
-    #[arg(help = "Input and output files(Without extension, comma separated), in that order(If you provide only one value, that will be assumed to be the file name for both input and output).\nAssumed to be stdin/stdout unless using usaco link or id, in which case regex will be used to infer it.\nDoesn't support a file input/output and stdin/stdout for the other one, reach out to me if you need this feature")]
+    #[arg(long, requires = "input", value_delimiter = ',')]
+    #[arg(
+        help = "Input and output files(Without extension, comma separated), in that order(If you provide only one value, that will be assumed to be the file name for both input and output).\nAssumed to be stdin/stdout unless using usaco link or id, in which case regex will be used to infer it.\nDoesn't support a file input/output and stdin/stdout for the other one, reach out to me if you need this feature"
+    )]
     pub io: Option<Vec<String>>,
 
-    #[arg(short,long, requires = "input", value_delimiter=',')]
-    pub tag: Option<Vec<Tags>>
+    #[arg(short, long, requires = "input", value_delimiter = ',')]
+    pub tag: Option<Vec<String>>,
 }
 
 #[derive(Args, Debug, Serialize, Deserialize)]
@@ -57,12 +60,19 @@ struct InputType {
     #[arg(value_parser=validate_folder)]
     folder: Option<PathBuf>,
 
-    #[arg(short = 'p', long, help = "Link to usaco problem page, will download test cases by using regex to get to test data page")]
+    #[arg(
+        short = 'p',
+        long,
+        help = "Link to usaco problem page, will download test cases by using regex to get to test data page"
+    )]
     #[arg(group = "input")]
     #[arg(value_parser=validate_usaco_link)]
     usaco_link: Option<String>,
 
-    #[arg(long, help = "ID of usaco problem, is cpid in the link, and will be used to create a link to the problem page")]
+    #[arg(
+        long,
+        help = "ID of usaco problem, is cpid in the link, and will be used to create a link to the problem page"
+    )]
     #[arg(group = "input")]
     usaco_id: Option<i32>,
 }
@@ -106,7 +116,10 @@ fn get_problem_io(link: &String) -> Result<String, String> {
     let problem_page_text = handle_error!(problem_page.text(), "Failed to get HTML from problem page");
     let io_regex = handle_error!(Regex::new(PROBLEM_IO_REGEX_STR), "Failed to create regex for problem io");
     let io_match = io_regex.captures(&problem_page_text);
-    let io_match = handle_option!(io_match, "Failed to get io from problem page, page doesn't have \"INPUT FORMAT\" section, could mean ID/Link is invalid");
+    let io_match = handle_option!(
+        io_match,
+        "Failed to get io from problem page, page doesn't have \"INPUT FORMAT\" section, could mean ID/Link is invalid"
+    );
     let io_str = &io_match["io"];
     let io_str = io_str.trim();
     let io_string = if io_str == USACO_STANDARD_IO_STR {
@@ -142,6 +155,11 @@ impl AddArgs {
                 format!("Failed to access link, status code is not 200, link: {} ", link)
             );
         }
+        let name = link.split("/").last().unwrap().split(".").next().unwrap().to_string().clone();
+        let test_names = ProgramData::load_empty_tests().unwrap();
+        if test_names.contains_key(&name) {
+            return Err(format!("Test with name \"{}\" already exists", &name));
+        }
 
         let mut bytes: Vec<u8> = vec![];
         println!("Downloading zip file...");
@@ -173,7 +191,6 @@ impl AddArgs {
         let zip_file = handle_error!(fs::File::open(&temp_zip_path), "Failed to open zip file");
         let mut zip_archive = handle_error!(ZipArchive::new(zip_file), "Failed to read zip file");
         handle_error!(zip_archive.extract(temp_dir.path()), "Failed to extract zip file");
-        let name = link.split("/").last().unwrap().split(".").next().unwrap().to_string().clone();
         Ok((name, temp_dir.into_path()))
     }
     fn data_from_folder(&self, folder: &PathBuf) -> Result<(String, PathBuf), String> {

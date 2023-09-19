@@ -28,29 +28,30 @@ impl ProgramData {
         }
     }
     pub fn run(&mut self) -> Result<(), String> {
-        handle_error!(self.load_empty_tests(),"Failed to load empty(Without input & output data) tests");
+        let tests = handle_error!(ProgramData::load_empty_tests(), "Failed to load empty(Without input & output data) tests");
+        self.tests = tests;
         match &self.cli_data.command {
             Some(Commands::ADD(args)) => {
-                let (input_io, output_io) = handle_error!(args.get_io(),"Failed to get IO Data");
-                let (test_name, test_path) = handle_error!(args.get_test_data(),"Failed to get test data");
+                let (input_io, output_io) = handle_error!(args.get_io(), "Failed to get IO Data");
+                let (test_name, test_path) = handle_error!(args.get_test_data(), "Failed to get test data");
                 if !args.input_type_is_folder() {
                     self.temp_path = Some(test_path.clone());
                 }
-                if self.tests.contains_key(&test_name) {
-                    return Err(format!("Test with name \"{}\" already exists", &test_name));
-                }
-                let test = handle_error!(Test::from_folder(
-                    test_path,
-                    args.input_extension.clone(),
-                    args.output_extension.clone(),
-                    input_io,
-                    output_io,
-                ),"Failed to create test from folder/zip");
+                let test = handle_error!(
+                    Test::from_folder(
+                        test_path,
+                        args.input_extension.clone(),
+                        args.output_extension.clone(),
+                        input_io,
+                        output_io,
+                    ),
+                    "Failed to create test from folder/zip"
+                );
                 self.tests.insert(test_name, test);
-                handle_error!(self.write_data(),"Failed to write data for new test");
+                handle_error!(self.write_data(), "Failed to write data for new test");
                 Ok(())
             }
-            Some(Commands::LIST(args)) => Ok(handle_error!(args.run(&mut self.tests),"Failed to list test/cases")),
+            Some(Commands::LIST(args)) => Ok(handle_error!(args.run(&mut self.tests), "Failed to list test/cases")),
             Some(Commands::REMOVE(args)) => {
                 if args.all {
                     if self.tests.is_empty() {
@@ -82,13 +83,13 @@ impl ProgramData {
                 if !self.tests.contains_key(test_name) {
                     return Err(format!("Test with name \"{}\" doesn't exist", test_name));
                 };
-                let config = handle_error!(Config::get(),"Failed to load in config");
+                let config = handle_error!(Config::get(), "Failed to load in config");
                 let test = self.tests.get_mut(test_name).unwrap();
                 let folder = handle_option!(data_local_dir(), "Failed to get data local dir, dirs-next crate issue");
                 let folder = folder.join(DEFAULT_FOLDER_NAME).join("tests").join(test_name);
-                handle_error!(test.fill_cases(folder),"Failed to get config");
-                let mut run_dir = handle_error!(RunDir::new(test, &args, &config),"Failed to compile file and store in temp dir");
-                handle_error!(run_dir.run(),"Failed to run test");
+                handle_error!(test.fill_cases(folder), "Failed to get config");
+                let mut run_dir = handle_error!(RunDir::new(test, &args, &config), "Failed to compile file and store in temp dir");
+                handle_error!(run_dir.run(), "Failed to run test");
                 Ok(())
             }
             Some(Commands::RENAME(args)) => {
@@ -116,7 +117,7 @@ impl ProgramData {
         }
     }
 
-    pub fn load_empty_tests(&mut self) -> Result<(), String> {
+    pub fn load_empty_tests() -> Result<HashMap<String, Test>, String> {
         let data_dir = handle_option!(
             dirs_next::data_local_dir(),
             "Failed to get data directory, not sure why this should happen, look into dirs-next::data_local_dir() to find more about error"
@@ -128,6 +129,7 @@ impl ProgramData {
         // Check for test.json
         // If it exists, load it, if not create it
         let main_path = data_dir.join("test.json");
+        let mut tests = HashMap::new();
         if main_path.exists() {
             let metadata = main_path.metadata().map_err(|e| {
                 format!(
@@ -144,7 +146,7 @@ impl ProgramData {
                 serde_json::from_str(&main_file).map_err(|e| "Error parsing test.json in data dir:\n".to_string() + &e.to_string())?;
             for (name, empty_test) in main {
                 let test = Test::from(empty_test);
-                self.tests.insert(name, test);
+                tests.insert(name, test);
             }
         } else {
             let main: HashMap<String, EmptyTest> = HashMap::new();
@@ -152,7 +154,7 @@ impl ProgramData {
             fs::write(&main_path, main_file).map_err(|e| "Error writing test.json in data dir:\n".to_string() + &e.to_string())?;
         }
 
-        Ok(())
+        Ok(tests)
     }
 
     pub fn clear_temp_files(&self) -> Result<(), String> {
