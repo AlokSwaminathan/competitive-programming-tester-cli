@@ -43,9 +43,6 @@ pub struct AddArgs {
         help = "Input and output files(Without extension, comma separated), in that order(If you provide only one value, that will be assumed to be the file name for both input and output).\nAssumed to be stdin/stdout unless using usaco link or id, in which case regex will be used to infer it.\nDoesn't support a file input/output and stdin/stdout for the other one, reach out to me if you need this feature"
     )]
     pub io: Option<Vec<String>>,
-
-    #[arg(short, long, requires = "input", value_delimiter = ',')]
-    pub tag: Option<Vec<String>>,
 }
 
 #[derive(Args, Debug, Serialize, Deserialize)]
