@@ -8,18 +8,20 @@ Supports C, C++, Java, and Python, however, C, Java, and Python use the versions
 At the moment it works with USACO Problems and allows you to download test cases with the problem link (Not the link to the test case download), or the problem ID.  
 If you want to download other types of problems they have to be zipped, and directly extract to test cases that are in the same directory with different file endings, and matching names to show that test cases correspond. You can also just configure the test cases to match those specifications and add a test from a folder.   
 
-### Future Plans
-  &ensp;Ability to download sample cases on USACO, Codeforces, and ATCoder.  
-  &ensp;Support for AtCoder cases.  
-  &ensp;Support for submission of problems (Not during competitions).  
-  &ensp;Ability to run a test once by downloading it in the run command then deleting it.   
-
+## Installation
 Installation (requires [Rust](https://www.rust-lang.org/tools/install)):  
   &ensp;`cargo install cp-tester`  
 Installation without Cargo(Coming soon once I set up an action for it):  
   &ensp;Should be a release with executables for Windows, Linux, and Mac, but it is up to you to get them in the right directory so they can be a command. 
 
 Might add an install script later  
+
+### Future Plans
+  &ensp;Ability to download sample cases on USACO, Codeforces, and ATCoder.  
+  &ensp;Support for AtCoder cases.  
+  &ensp;Support for submission of problems (Not during competitions).  
+  &ensp;Ability to run a test once by downloading it in the run command then deleting it.   
+
 
 ## Features(Most of this information can be found by using --help):  
 
