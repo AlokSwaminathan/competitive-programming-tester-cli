@@ -40,8 +40,8 @@ impl Config {
     }
     pub fn get() -> Result<Config, String> {
         let config_dir = handle_option!(
-            dirs_next::config_dir(),
-            "Failed to get config directory, not sure why this should happen, look into dirs-next::config_dir() to find more about error"
+            dirs::config_dir(),
+            "Failed to get config directory, not sure why this should happen, look into dirs::config_dir() to find more about error"
         );
         let config_dir = config_dir.join(DEFAULT_FOLDER_NAME);
         if !config_dir.exists() {
@@ -99,8 +99,8 @@ impl Config {
     }
     pub fn reset() -> Result<(), String> {
         let config_dir = handle_option!(
-            dirs_next::config_dir(),
-            "Failed to get config directory, not sure why this should happen, look into dirs-next::config_dir() to find more about error"
+            dirs::config_dir(),
+            "Failed to get config directory, not sure why this should happen, look into dirs::config_dir() to find more about error"
         );
         let config_dir = config_dir.join(DEFAULT_FOLDER_NAME);
         if !config_dir.exists() {
@@ -121,8 +121,8 @@ impl Config {
     }
     pub fn save(&self) -> Result<(), String> {
         let config_dir = handle_option!(
-            dirs_next::config_dir(),
-            "Failed to get config directory, not sure why this should happen, look into dirs-next::config_dir() to find more about error"
+            dirs::config_dir(),
+            "Failed to get config directory, not sure why this should happen, look into dirs::config_dir() to find more about error"
         );
         let config_dir = config_dir.join(DEFAULT_FOLDER_NAME);
         if !config_dir.exists() {

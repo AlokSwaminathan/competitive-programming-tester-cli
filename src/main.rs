@@ -2,11 +2,11 @@ use std::process::exit;
 
 mod commands {
     pub mod add;
+    pub mod config;
     pub mod list;
     pub mod remove;
-    pub mod run;
     pub mod rename;
-    pub mod config;
+    pub mod run;
 }
 mod cli;
 mod config;

@@ -55,8 +55,8 @@ impl ListArgs {
                     None => return Err(format!("Test with name \"{}\" does not exist", &args.test)),
                 };
                 let data_dir = handle_option!(
-                    dirs_next::data_local_dir(),
-                    "Failed to get data directory, not sure why this should happen, look into dirs-next::data_local_dir() to find more about error"
+                    dirs::data_local_dir(),
+                    "Failed to get data directory, not sure why this should happen, look into dirs::data_local_dir() to find more about error"
                 );
                 let test_dir = data_dir.join(DEFAULT_FOLDER_NAME).join("tests").join(&args.test);
                 test.fill_cases(test_dir)?;

@@ -7,7 +7,6 @@ use crate::{
 };
 use crate::{handle_error, DEFAULT_FOLDER_NAME};
 use clap::Parser;
-use dirs_next::data_local_dir;
 use std::fs;
 use std::{collections::HashMap, path::PathBuf};
 
@@ -58,7 +57,7 @@ impl ProgramData {
                         return Err("There are no tests to remove".to_string());
                     }
                     self.tests.clear();
-                    let test_path = handle_option!(data_local_dir(), "Failed to get data local dir, dirs-next crate issue");
+                    let test_path = handle_option!(dirs::data_local_dir(), "Failed to get data local dir, dirs crate issue");
                     let test_path = test_path.join(DEFAULT_FOLDER_NAME).join("tests");
                     handle_error!(fs::remove_dir_all(test_path), "Failed to remove test directory");
                     println!("Successfully removed all tests");
@@ -67,7 +66,7 @@ impl ProgramData {
                 let test_names = args.test_name.as_ref().unwrap();
                 for test_name in test_names {
                     if let Some(_) = self.tests.remove_entry(test_name) {
-                        let test_path = handle_option!(data_local_dir(), "Failed to get data local dir, dirs-next crate issue");
+                        let test_path = handle_option!(dirs::data_local_dir(), "Failed to get data local dir, dirs crate issue");
                         let test_path = test_path.join("usaco-tester/tests").join(test_name);
                         handle_error!(fs::remove_dir_all(test_path), "Failed to remove test directory");
                         println!("Successfully removed test with name \"{}\" ", test_name);
@@ -85,7 +84,7 @@ impl ProgramData {
                 };
                 let config = handle_error!(Config::get(), "Failed to load in config");
                 let test = self.tests.get_mut(test_name).unwrap();
-                let folder = handle_option!(data_local_dir(), "Failed to get data local dir, dirs-next crate issue");
+                let folder = handle_option!(dirs::data_local_dir(), "Failed to get data local dir, dirs crate issue");
                 let folder = folder.join(DEFAULT_FOLDER_NAME).join("tests").join(test_name);
                 handle_error!(test.fill_cases(folder), "Failed to get config");
                 let mut run_dir = handle_error!(RunDir::new(test, &args, &config), "Failed to compile file and store in temp dir");
@@ -104,8 +103,8 @@ impl ProgramData {
                 let (_, test) = self.tests.remove_entry(old_name).unwrap();
                 self.tests.insert(new_name.clone(), test);
                 let data_dir = handle_option!(
-                    dirs_next::data_local_dir(),
-                    "Failed to get data directory, not sure why this should happen, look into dirs-next::data_local_dir() to find more about error"
+                    dirs::data_local_dir(),
+                    "Failed to get data directory, not sure why this should happen, look into dirs::data_local_dir() to find more about error"
                 );
                 let test_dir = data_dir.join(DEFAULT_FOLDER_NAME).join("tests").join(old_name);
                 let new_test_dir = data_dir.join(DEFAULT_FOLDER_NAME).join("tests").join(new_name);
@@ -119,8 +118,8 @@ impl ProgramData {
 
     pub fn load_empty_tests() -> Result<HashMap<String, Test>, String> {
         let data_dir = handle_option!(
-            dirs_next::data_local_dir(),
-            "Failed to get data directory, not sure why this should happen, look into dirs-next::data_local_dir() to find more about error"
+            dirs::data_local_dir(),
+            "Failed to get data directory, not sure why this should happen, look into dirs::data_local_dir() to find more about error"
         );
         let data_dir = data_dir.join(DEFAULT_FOLDER_NAME);
         if !data_dir.exists() {
@@ -168,8 +167,8 @@ impl ProgramData {
 
     pub fn write_data(&self) -> Result<(), String> {
         let data_dir = handle_option!(
-            dirs_next::data_local_dir(),
-            "Failed to get data directory, not sure why this should happen, look into dirs_next::data_local_dir() to find more about error"
+            dirs::data_local_dir(),
+            "Failed to get data directory, not sure why this should happen, look into dirs::data_local_dir() to find more about error"
         );
         let data_dir = data_dir.join("usaco-tester/");
         for (name, test) in self.tests.iter().filter(|(_, test)| !test.is_empty()) {
