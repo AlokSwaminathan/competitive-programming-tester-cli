@@ -37,7 +37,7 @@ Might add an install script later
   &ensp;Default name:  
     &ensp;&ensp;For `--link` it is the name of the zip file that is downloaded  
     &ensp;&ensp;For `--folder` it is the name of the folder  
-    &ensp;&ensp;For `--usaco-link` and `--usaco-id` the name is formatted <problem_name>_<division>_<competition><year>, such as find_and_replace_silver_jan23  
+    &ensp;&ensp;For `--usaco-link` and `--usaco-id` the name is formatted <problem_name>\_\<division\>\_\<competition\>\<year\>, such as find_and_replace_silver_jan23  
   &ensp;`--name` takes a name that overrides the default name  
 **IO:**  
   &ensp;A test stores 2 values, `input_io` and `output_io`, which can either be STDIN/STDOUT respectively, or be file names  
