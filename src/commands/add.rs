@@ -16,6 +16,8 @@ const SOLUTION_BUTTON_REGEX_STR: &str =
     r#"<a href='index\.php\?page=viewproblem2&cpid=(?<id>[0-9]+)'>View problem</a>&nbsp \| &nbsp <a href='(?<test_data>[^']*)'>Test data</a> &nbsp"#;
 const PROBLEM_IO_REGEX_STR: &str = r#"INPUT FORMAT \((?<io>[^)]*)\):"#;
 const USACO_STANDARD_IO_STR: &str = "input arrives from the terminal / stdin";
+const USACO_PROBLEM_NAME_REGEX_STR: &str = r#"<h2> USACO 20(?<year>\d\d) (?<competition>.+) Contest, (?<divison>.+) <\/h2>
+<h2> Problem \d\. (?<name>.+) <\/h2>"#;
 
 #[derive(Args, Debug)]
 pub struct AddArgs {
@@ -131,7 +133,7 @@ fn get_problem_io(link: &String) -> Result<String, String> {
 impl AddArgs {
     pub fn get_test_data(&self) -> Result<(String, PathBuf), String> {
         let result = match (&self.input_type.link,&self.input_type.folder,&self.input_type.usaco_link,&self.input_type.usaco_id) {
-            (Some(link),None,None,None) => self.data_from_link(link),
+            (Some(link),None,None,None) => self.data_from_link(link,None),
             (None,Some(folder),None,None) => self.data_from_folder(folder),
             (None,None,Some(link),None) => self.data_from_usaco_link(link),
             (None,None,None,Some(id)) => self.data_from_usaco_id(id),
@@ -144,7 +146,7 @@ impl AddArgs {
         let (_, path) = result?;
         Ok((name, path))
     }
-    fn data_from_link(&self, link: &String) -> Result<(String, PathBuf), String> {
+    fn data_from_link(&self, link: &String, usaco_name: Option<String>) -> Result<(String, PathBuf), String> {
         let mut response = handle_error!(reqwest::blocking::get(link), "Failed to access link");
         if response.status() != reqwest::StatusCode::OK {
             return handle_error!(
@@ -152,7 +154,12 @@ impl AddArgs {
                 format!("Failed to access link, status code is not 200, link: {} ", link)
             );
         }
-        let name = link.split("/").last().unwrap().split(".").next().unwrap().to_string().clone();
+        let name = if let Some(problem_name) = usaco_name {
+            problem_name
+        } else {
+            link.split("/").last().unwrap().split(".").next().unwrap().to_string().clone()
+        };
+        println!("Test name is \"{}\"", name);
         let test_names = ProgramData::load_empty_tests().unwrap();
         if test_names.contains_key(&name) {
             return Err(format!("Test with name \"{}\" already exists", &name));
@@ -194,6 +201,11 @@ impl AddArgs {
         let folder = handle_error!(folder.canonicalize(), "Failed to get canonical(Absolute) path of folder");
         let name = handle_option!(folder.file_name(), "Can't get folder name from folder path, this shouldn't happen").to_str();
         let name = handle_option!(name, "Invalid folder name, not valid utf-8").to_string();
+        let test_names = ProgramData::load_empty_tests().unwrap();
+        if test_names.contains_key(&name) {
+            return Err(format!("Test with name \"{}\" already exists", &name));
+        }
+        println!("Test name is \"{}\"", name);
         Ok((name, folder))
     }
     fn data_from_usaco_link(&self, link: &String) -> Result<(String, PathBuf), String> {
@@ -219,6 +231,30 @@ impl AddArgs {
         let button_match =
             button_match.ok_or("Failed to get results page name from regex capture, page doesn't have \"Return To Problem List\" Button")?;
         let button_match = button_match?;
+
+        let name_regex = handle_error!(
+            Regex::new(USACO_PROBLEM_NAME_REGEX_STR),
+            format!("Failed to create regex from string - String is {}", USACO_PROBLEM_NAME_REGEX_STR)
+        );
+        let name = name_regex
+            .captures_iter(&problem_page_text)
+            .map(|cap| {
+                let year = handle_option!(cap.name("year"), "Failed to get year of contest from problem page using regex");
+                let competition = handle_option!(cap.name("competition"), "Failed to get name of contest from problem page using regex");
+                let divison = handle_option!(cap.name("divison"), "Failed to get divison of contest from problem page using regex");
+                let name = handle_option!(cap.name("name"), "Failed to get name of problem from problem page using regex");
+                let competition = competition.as_str().trim().to_ascii_lowercase();
+                let competition = if competition.contains("us open") { "open" } else { &competition[0..3] };
+                Ok(format!(
+                    "{}_{}_{}{}",
+                    name.as_str().trim().replace(" ", "_").to_ascii_lowercase(),
+                    divison.as_str().trim().to_ascii_lowercase(),
+                    competition,
+                    year.as_str().trim()
+                ))
+            })
+            .next()
+            .unwrap()?;
 
         let problem_id = link.split("=").last().unwrap().to_string().parse::<i32>();
         let problem_id = handle_error!(problem_id, "Failed to parse problem id from link");
@@ -255,7 +291,7 @@ impl AddArgs {
         }
         let test_data_link = test_data_link.unwrap();
         let test_data_link = format!("http://www.usaco.org/{}", test_data_link);
-        Ok(self.data_from_link(&test_data_link)?)
+        Ok(self.data_from_link(&test_data_link, Some(name))?)
     }
     fn data_from_usaco_id(&self, id: &i32) -> Result<(String, PathBuf), String> {
         let link = format!("{}{}", USACO_LINK_PREFIX, id);

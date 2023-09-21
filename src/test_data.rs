@@ -145,7 +145,7 @@ impl Test {
             let output_file = format!("{}.{}", name, self.output_extension);
             let input_path = path.join(PathBuf::from(input_file));
             let output_path = path.join(PathBuf::from(output_file));
-            test_case.write_data(&input_path, &output_path,name)?;
+            test_case.write_data(&input_path, &output_path, name)?;
         }
 
         Ok(())
@@ -168,24 +168,20 @@ impl Test {
     pub fn get_files(&self, temp_path: &PathBuf) -> (Option<PathBuf>, Option<PathBuf>) {
         let input_file = match &self.input_io {
             IOType::STD => None,
-            IOType::FILE(path) => {
-                Some(temp_path.join(path))
-            }
+            IOType::FILE(path) => Some(temp_path.join(path)),
         };
         let output_file = match &self.output_io {
             IOType::STD => None,
-            IOType::FILE(path) => {
-                Some(temp_path.join(path))
-            }
+            IOType::FILE(path) => Some(temp_path.join(path)),
         };
         (input_file, output_file)
     }
     pub fn case_iter(&self) -> impl Iterator<Item = (&String, &TestCase)> {
         let sorted_names = self.get_sorted_case_names();
-        let sorted_vec: Vec<(&String,&TestCase)> = sorted_names.iter().map(|name| (*name,self.cases.get(*name).unwrap())).collect();
+        let sorted_vec: Vec<(&String, &TestCase)> = sorted_names.iter().map(|name| (*name, self.cases.get(*name).unwrap())).collect();
         sorted_vec.into_iter()
     }
-    pub fn get_io_types(&self) -> (String,String) {
+    pub fn get_io_types(&self) -> (String, String) {
         (self.input_io.to_string(true), self.output_io.to_string(false))
     }
 }
@@ -203,11 +199,17 @@ impl TestCase {
         Ok(())
     }
     pub fn write_input(&self, input_path: &PathBuf, name: &String) -> Result<(), String> {
-        handle_error!(fs::write(input_path, &self.input), format!("Failed to write test case input to file for test case \"{}\"", name));
+        handle_error!(
+            fs::write(input_path, &self.input),
+            format!("Failed to write test case input to file({:?}) for test case \"{}\"", input_path, name)
+        );
         Ok(())
     }
     pub fn write_output(&self, output_path: &PathBuf, name: &String) -> Result<(), String> {
-        handle_error!(fs::write(output_path, &self.output), format!("Failed to write test case output to file for test case \"{}\"", name));
+        handle_error!(
+            fs::write(output_path, &self.output),
+            format!("Failed to write test case output to file({:?}) for test case \"{}\"", output_path, name)
+        );
         Ok(())
     }
     pub fn get_input(&self) -> &String {
@@ -241,10 +243,10 @@ impl From<&Test> for EmptyTest {
     }
 }
 
-impl IOType{
-    pub fn to_string(&self,input: bool) -> String{
-        match self{
-            IOType::STD => if input {"stdin"} else {"stdout"}.to_string(),
+impl IOType {
+    pub fn to_string(&self, input: bool) -> String {
+        match self {
+            IOType::STD => if input { "stdin" } else { "stdout" }.to_string(),
             IOType::FILE(path) => path.to_string_lossy().to_string(),
         }
     }
