@@ -10,7 +10,9 @@ If you want to download other types of problems they have to be zipped, and dire
 
 ## Installation
 Installation (requires [Rust](https://www.rust-lang.org/tools/install)):  
-  &ensp;`cargo install cp-tester`  
+```
+cargo install cp-tester
+``` 
 Installation without Cargo(Coming soon once I set up an action for it):  
   &ensp;Should be a release with executables for Windows, Linux, and Mac, but it is up to you to get them in the right directory so they can be a command. 
 
