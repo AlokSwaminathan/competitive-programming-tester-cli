@@ -3,7 +3,7 @@ use std::{
     fs::{self, File},
     io::{self, Read, Write},
     path::PathBuf,
-    process::Command,
+    process::{Command, Stdio},
     time::{Duration, Instant},
 };
 
@@ -200,7 +200,7 @@ impl RunCommand {
             "py" => FileType::PYTHON,
             _ => unreachable!("Invalid file extension"),
         };
-        let run_command = match file_type {
+        let mut run_command = match file_type {
             FileType::CPP(ver) => {
                 let mut compile_command = config.get_gpp_command();
                 compile_command.arg("-o").arg(temp_path.join("output"));
@@ -251,6 +251,7 @@ impl RunCommand {
                 run_command
             }
         };
+        run_command.stdout(Stdio::piped());
         Ok(RunCommand(run_command))
     }
 }
