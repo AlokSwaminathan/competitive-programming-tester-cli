@@ -44,25 +44,6 @@ IO:
   The default values for these fields is STDIN and STDOUT, unless you are downloading a USACO problem using the specific flags, in which case it will be inferred.  
   *This does unfortunately mean that if the test data has different extensions than the input and output, you will have to modify the test data first, but this isn't something I have seen often  
 
-### `cp-tester remove` - Removes tests   
-`cp-tester remove <test_name>` removes the test with that name  
-`--all` to remove all cases(Default: false)  
-
-### `cp-tester list` - Lists tests  
-`cp-tester list` lists all test names in alphabetical order 
-`--show-io` to show IO data for the tests(Default: false)  
-`cp-tester list test <test>` to list cases for a specific test.   
-  `--cases` to list certain cases (Comma separated)(Default: all)  
-  `--show-input` and `--show-output` do what you expect and are both false by default as for some tests they can be very large. 
-
-### `cp-tester run` - Run test on a file  
-`cp-tester run <name> --file <file>`  Valid file extensions are .c, .java, .py, and .cpp   
-`--cases` to specify cases to run (comma separated)(Default: all cases)  
-`--show-input` to show input(Default: false)  
-`--compare-output` to compare your program's output to the desired output(Default: false)  
-`--cpp-ver` to specify C++ version, defaults to that in the config(Default: 17)  
-`--timeout` timeout in milliseconds, defaults to that in the config(Default: 5000ms)  
-
 ### `cp-tester config` - Interaction with the config  
 This is the default config file (Stored wherever dirs::config_dir()/cp-tester is):  
 ```
@@ -88,7 +69,24 @@ There are sub-commands to edit each value in the config, as well as some others.
 `unicode-output` determines if the test results after running the test on a file will be "PASSED" and "FAILED" or "✅" and "❌".  
 
 
+### `cp-tester list` - Lists tests  
+`cp-tester list` lists all test names in alphabetical order 
+`--show-io` to show IO data for the tests(Default: false)  
+`cp-tester list test <test>` to list cases for a specific test.   
+  `--cases` to list certain cases (Comma separated)(Default: all)  
+  `--show-input` and `--show-output` do what you expect and are both false by default as for some tests they can be very large. 
+  
+### `cp-tester remove` - Removes tests   
+`cp-tester remove <test_name>` removes the test with that name  
+`--all` to remove all cases(Default: false)  
 
+### `cp-tester run` - Run test on a file  
+`cp-tester run <name> --file <file>`  Valid file extensions are .c, .java, .py, and .cpp   
+`--cases` to specify cases to run (comma separated)(Default: all cases)  
+`--show-input` to show input(Default: false)  
+`--compare-output` to compare your program's output to the desired output(Default: false)  
+`--cpp-ver` to specify C++ version, defaults to that in the config(Default: 17)  
+`--timeout` timeout in milliseconds, defaults to that in the config(Default: 5000ms)  
 
 
 ### Example usage:  
