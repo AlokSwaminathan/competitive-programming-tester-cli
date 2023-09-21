@@ -297,6 +297,7 @@ impl AddArgs {
                 }
             }
         }
+        println!("Test IO: {:?}, {:?}", input_io, input_io);
 
         Ok((input_io, output_io))
     }
