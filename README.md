@@ -90,7 +90,7 @@ There are sub-commands to edit each value in the config, as well as some others.
 
 
 ### Example usage:  
-You want to work on http://www.usaco.org/index.php?page=viewproblem2&cpid=991
+You want to work on http://www.usaco.org/index.php?page=viewproblem2&cpid=991  
 Download the test cases:  
 `cp-tester add --usaco-id 991`  
 Run them on a file:  
