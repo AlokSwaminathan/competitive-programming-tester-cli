@@ -27,7 +27,7 @@ Might add an install script later
 **Adding tests:**  
   &ensp;All test cases should be in the same directory level, and have different extensions for input and output. For example, case 10 would be 10.in and 10.out.  
   &ensp;`--link` takes a link to a zip file that must extract directly to test cases  
-  &ensp;`--folder` takes a path to a folder  
+  &ensp;`--folder` takes a path to a folder (If you get an error about writing test data when adding a test from a folder, just try rerunning it, error showed up for me but I couldn't replicate it ever again so not sure how to fix)  
   &ensp;`--usaco-link` takes a link to a USACO problem(The problem page not the test data link)  
   &ensp;`--usaco-id` takes a USACO problem ID(cpid=ID at the end of the link)  
 **Extensions (DONT USE A .):**  
