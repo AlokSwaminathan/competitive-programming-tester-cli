@@ -9,40 +9,40 @@ At the moment it works with USACO Problems and allows you to download test cases
 If you want to download other types of problems they have to be zipped, and directly extract to test cases that are in the same directory with different file endings, and matching names to show that test cases correspond. You can also just configure the test cases to match those specifications and add a test from a folder.   
 
 ### Future Plans
-Ability to download sample cases on USACO, Codeforces, and ATCoder.  
-Support for AtCoder cases.  
-Support for submission of problems (Not during competitions).  
-Ability to run a test once by downloading it in the run command then deleting it.   
+  &ensp;Ability to download sample cases on USACO, Codeforces, and ATCoder.  
+  &ensp;Support for AtCoder cases.  
+  &ensp;Support for submission of problems (Not during competitions).  
+  &ensp;Ability to run a test once by downloading it in the run command then deleting it.   
 
 Installation (requires [Rust](https://www.rust-lang.org/tools/install)):  
-  `cargo install competitive-programming-tester-cli`  
+  &ensp;`cargo install competitive-programming-tester-cli`  
 Installation without Cargo:  
-  Should be a release with executables for Windows, Linux, and Mac, but it is up to you to get them in the right directory so they can be a command.  
+  &ensp;Should be a release with executables for Windows, Linux, and Mac, but it is up to you to get them in the right directory so they can be a command.  
 
 Might add an install script later  
 
 ## Features(Most of this information can be found by using --help):  
 
 ### `cp-tester add` - Installs tests  
-Adding tests:  
-  All test cases should be in the same directory level, and have different extensions for input and output. For example, case 10 would be 10.in and 10.out.  
-  `--link` takes a link to a zip file that must extract directly to test cases  
-  `--folder` takes a path to a folder  
-  `--usaco-link` takes a link to a USACO problem(The problem page not the test data link)  
-  `--usaco-id` takes a USACO problem ID(cpid=ID at the end of the link)  
-Extensions (DONT USE A .):  
-  `--input-extension` takes the input extension that will be used to find the test cases, and that will be used if the test requires file IO(Default: in)  
-  `--output-extension` takes the output extension that will be used to find the test cases, and that will be used if the test requires file IO(Default: in)  
-Naming:  
-  Default name:  
-    For `--link` it is the name of the zip file that is downloaded  
-    For `--folder` it is the name of the folder  
-    For `--usaco-link` and `--usaco-id` the name is formatted <problem_name>_<division>_<month><year>, such as find_and_replace_silver_jan23  
-  `--name` takes a name that overrides the default name  
-IO:  
-  A test stores 2 values, `input_io` and `output_io`, which can either be STDIN/STDOUT respectively, or be file names  
-  The default values for these fields is STDIN and STDOUT, unless you are downloading a USACO problem using the specific flags, in which case it will be inferred.  
-  *This does unfortunately mean that if the test data has different extensions than the input and output, you will have to modify the test data first, but this isn't something I have seen often  
+**Adding tests:**  
+  &ensp;All test cases should be in the same directory level, and have different extensions for input and output. For example, case 10 would be 10.in and 10.out.  
+  &ensp;`--link` takes a link to a zip file that must extract directly to test cases  
+  &ensp;`--folder` takes a path to a folder  
+  &ensp;`--usaco-link` takes a link to a USACO problem(The problem page not the test data link)  
+  &ensp;`--usaco-id` takes a USACO problem ID(cpid=ID at the end of the link)  
+**Extensions (DONT USE A .):**  
+  &ensp;`--input-extension` takes the input extension that will be used to find the test cases, and that will be used if the test requires file IO(Default: in)  
+  &ensp;`--output-extension` takes the output extension that will be used to find the test cases, and that will be used if the test requires file IO(Default: out)  
+**Naming:**  
+  &ensp;Default name:  
+    &ensp;&ensp;For `--link` it is the name of the zip file that is downloaded  
+    &ensp;&ensp;For `--folder` it is the name of the folder  
+    &ensp;&ensp;For `--usaco-link` and `--usaco-id` the name is formatted <problem_name>\_\<division\>\_\<competition\>\<year\>, such as find_and_replace_silver_jan23  
+  &ensp;`--name` takes a name that overrides the default name  
+**IO:**  
+  &ensp;A test stores 2 values, `input_io` and `output_io`, which can either be STDIN/STDOUT respectively, or be file names  
+  &ensp;The default values for these fields is STDIN and STDOUT, unless you are downloading a USACO problem using the specific flags, in which case it will be inferred.  
+  &ensp;*This does unfortunately mean that if the test data has different extensions than the input and output, you will have to modify the test data first, but this isn't something I have seen often  
 
 ### `cp-tester config` - Interaction with the config  
 This is the default config file (Stored wherever dirs::config_dir()/cp-tester is):  
@@ -73,8 +73,8 @@ There are sub-commands to edit each value in the config, as well as some others.
 `cp-tester list` lists all test names in alphabetical order 
 `--show-io` to show IO data for the tests(Default: false)  
 `cp-tester list test <test>` to list cases for a specific test.   
-  `--cases` to list certain cases (Comma separated)(Default: all)  
-  `--show-input` and `--show-output` do what you expect and are both false by default as for some tests they can be very large. 
+  &ensp;`--cases` to list certain cases (Comma separated)(Default: all)  
+  &ensp;`--show-input` and `--show-output` do what you expect and are both false by default as for some tests they can be very large. 
   
 ### `cp-tester remove` - Removes tests   
 `cp-tester remove <test_name>` removes the test with that name  
