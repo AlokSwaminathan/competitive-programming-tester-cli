@@ -1,2 +1,0 @@
-add tagging for tests and each tagging allows for custom config files
-move timeout to each test, and if not specified it will use the config value
