@@ -32,8 +32,26 @@ enum ConfigCommands {
     #[command(about = "Set a flag for gcc")]
     SET_GCC_FLAG(SetFlagArgs),
 
-    #[command(about="Set the default time limit(in milliseconds, 0 for no limit)")]
-    SET_TIME_LIMIT(SetTimeLimitArgs),
+    #[command(about = "Set a flag for javac")]
+    SET_JAVAC_FLAG(SetFlagArgs),
+
+    #[command(about = "Set a flag for java")]
+    SET_JAVA_FLAG(SetFlagArgs),
+
+    #[command(about = "Remove a flag for g++")]
+    REMOVE_GPP_FLAG(RemoveFlagArgs),
+
+    #[command(about = "Remove a flag for gcc")]
+    REMOVE_GCC_FLAG(RemoveFlagArgs),
+
+    #[command(about = "Remove a flag for javac")]
+    REMOVE_JAVAC_FLAG(RemoveFlagArgs),
+
+    #[command(about = "Remove a flag for java")]
+    REMOVE_JAVA_FLAG(RemoveFlagArgs),
+
+    #[command(about = "Set the default timeout(in milliseconds, 0 for no limit)")]
+    SET_TIMEOUT(SetTimeLimitArgs),
 }
 
 #[derive(Args, Debug, PartialEq)]
@@ -59,13 +77,19 @@ fn is_bool(val: &str) -> Result<i32, String> {
 #[derive(Args, Debug, PartialEq)]
 struct SetFlagArgs {
     flag: String,
+    #[arg(default_value="")]
     value: String,
 }
 
 #[derive(Args, Debug, PartialEq)]
+struct RemoveFlagArgs {
+    flag: String,
+}
+
+#[derive(Args, Debug, PartialEq)]
 struct SetTimeLimitArgs {
-    #[arg(help="Time in seconds")]
-    time: u32,
+    #[arg(help = "Time in seconds")]
+    time: u64,
 }
 
 impl ConfigArgs {
@@ -102,6 +126,57 @@ impl ConfigArgs {
                 let old_val = config.gcc_flags.insert(args.flag.clone(), args.value.clone());
                 if old_val.is_some() {
                     println!("Overwrote old value: {}", old_val.unwrap());
+                }
+            }
+            ConfigCommands::SET_JAVAC_FLAG(args) => {
+                let old_val = config.javac_flags.insert(args.flag.clone(), args.value.clone());
+                if old_val.is_some() {
+                    println!("Overwrote old value: {}", old_val.unwrap());
+                }
+            }
+            ConfigCommands::SET_JAVA_FLAG(args) => {
+                let old_val = config.java_flags.insert(args.flag.clone(), args.value.clone());
+                if old_val.is_some() {
+                    println!("Overwrote old value: {}", old_val.unwrap());
+                }
+            }
+            ConfigCommands::REMOVE_GPP_FLAG(args) => {
+                let old_val = config.gpp_flags.remove(&args.flag);
+                if old_val.is_some() {
+                    println!("Removed flag");
+                } else {
+                    println!("Flag not found");
+                }
+            }
+            ConfigCommands::REMOVE_GCC_FLAG(args) => {
+                let old_val = config.gcc_flags.remove(&args.flag);
+                if old_val.is_some() {
+                    println!("Removed flag");
+                } else {
+                    println!("Flag not found");
+                }
+            }
+            ConfigCommands::REMOVE_JAVAC_FLAG(args) => {
+                let old_val = config.javac_flags.remove(&args.flag);
+                if old_val.is_some() {
+                    println!("Removed flag");
+                } else {
+                    println!("Flag not found");
+                }
+            }
+            ConfigCommands::REMOVE_JAVA_FLAG(args) => {
+                let old_val = config.java_flags.remove(&args.flag);
+                if old_val.is_some() {
+                    println!("Removed flag");
+                } else {
+                    println!("Flag not found");
+                }
+            }
+            ConfigCommands::SET_TIMEOUT(args) => {
+                let old_val = config.default_timeout;
+                config.default_timeout = args.time;
+                if old_val != config.default_timeout {
+                    println!("Overwrote old value: {}", old_val);
                 }
             }
             _ => unreachable!(),

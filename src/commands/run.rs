@@ -135,7 +135,7 @@ impl RunDir {
             let mut run_command = handle_error!(run_command.spawn(), "Failed to spawn thread for program");
             let now = Instant::now();
             let output = handle_error!(run_command.wait_timeout(timeout), "Failed to wait for program to finish");
-            let time_taken = now.elapsed().as_millis();
+            let time_taken = now.elapsed().as_micros() as f64 / 1000.0;
 
             if output.is_none() {
                 println!("Program timed out in {} ms", timeout.as_millis());
@@ -238,11 +238,12 @@ impl RunCommand {
                 run_command
             }
             FileType::JAVA => {
-                let mut compile_command = Command::new("javac");
+                let mut compile_command = config.get_javac_command();
                 compile_command.arg(file_path);
                 compile_command.arg("-d").arg(temp_path);
                 handle_error!(compile_command.output(), "Failed to compile file");
                 let mut class_name = temp_path.join(file_path.file_stem().unwrap());
+                let class_stem = class_name.clone();
                 class_name.set_extension("class");
                 if !class_name.exists() {
                     return Err(format!(
@@ -250,8 +251,8 @@ impl RunCommand {
                         class_name.to_str().unwrap()
                     ));
                 }
-                let mut run_command = Command::new("java");
-                run_command.arg(class_name.file_name().unwrap());
+                let mut run_command = config.get_java_command();
+                run_command.arg(class_stem.file_name().unwrap());
                 run_command
             }
             FileType::PYTHON => {
