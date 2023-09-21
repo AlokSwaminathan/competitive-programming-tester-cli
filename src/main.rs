@@ -26,7 +26,7 @@ use program_data::ProgramData;
 // tester list
 // tester config
 
-const DEFAULT_FOLDER_NAME: &str = "usaco-tester";
+const DEFAULT_FOLDER_NAME: &str = "cp-tester";
 
 fn main() {
     let mut program_data = ProgramData::new();

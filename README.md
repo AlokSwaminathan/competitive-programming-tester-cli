@@ -1,4 +1,4 @@
-# Competive Programming Tester
+# Competitive Programming Tester
 CLI Tool for easy testing of competitive programming problems  
 Makes it easy to run tests using a terminal command instead of having to reupload to a website every time  
 My first Rust project, please give me any feedback at swaminathanalok@gmail.com  
@@ -15,7 +15,7 @@ If you want to download other types of problems they have to be zipped, and dire
   &ensp;Ability to run a test once by downloading it in the run command then deleting it.   
 
 Installation (requires [Rust](https://www.rust-lang.org/tools/install)):  
-  &ensp;`cargo install competitive-programming-tester-cli`  
+  &ensp;`cargo install cp-tester`  
 Installation without Cargo:  
   &ensp;Should be a release with executables for Windows, Linux, and Mac, but it is up to you to get them in the right directory so they can be a command.  
 
@@ -45,28 +45,31 @@ Might add an install script later
   &ensp;*This does unfortunately mean that if the test data has different extensions than the input and output, you will have to modify the test data first, but this isn't something I have seen often  
 
 ### `cp-tester config` - Interaction with the config  
-This is the default config file (Stored wherever dirs::config_dir()/cp-tester is):  
+This is the default config file (Stored wherever dirs::config_local_dir()/cp-tester is):  
 ```
 {
   "default_cpp_ver": 17,
   "unicode_output": false,
-  "default_time_limit": 5000,
+  "default_timeout": 5000,
   "gcc_flags": {
     "-lm": "",
     "-O2": ""
   },
   "gpp_flags": {
-    "-O2": "",
-    "-lm": ""
-  }
+    "-lm": "",
+    "-O2": ""
+  },
+  "java_flags": {},
+  "javac_flags": {}
 }
 ```
 `print` Prints the config   
 `print-default` Prints the default config  
 `reset` Resets the config to default  
-
-There are sub-commands to edit each value in the config, as well as some others.
 `unicode-output` determines if the test results after running the test on a file will be "PASSED" and "FAILED" or "✅" and "❌".  
+
+There are sub-commands to edit each value in the config, including adding and removing flags. If you pass two values to a set flag subcommand, they will be separated with an "=", if you pass one, only that value will be given. So if you want to, for example, pass -Xss4m to increase the stack size, just use `cp-tester config set-java-flag -Xss4m`. 
+
 
 
 ### `cp-tester list` - Lists tests  
@@ -91,6 +94,9 @@ There are sub-commands to edit each value in the config, as well as some others.
 `--cpp-ver` to specify C++ version, defaults to that in the config(Default: 17)  
 `--timeout` timeout in milliseconds, defaults to that in the config(Default: 5000ms)  
 
+### Test storage
+Tests are stored in dirs::data_local_dir(), and the names of the tests and their IO data are in test.json, while folders corresponding to the names are in the `tests/` subdirectory.
+This allows for test names to be loaded without their data, so that a test is only loaded when necessary. 
 
 ### Example usage:  
 You want to work on http://www.usaco.org/index.php?page=viewproblem2&cpid=991  

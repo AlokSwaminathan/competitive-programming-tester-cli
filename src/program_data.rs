@@ -67,7 +67,7 @@ impl ProgramData {
                 for test_name in test_names {
                     if let Some(_) = self.tests.remove_entry(test_name) {
                         let test_path = handle_option!(dirs::data_local_dir(), "Failed to get data local dir, dirs crate issue");
-                        let test_path = test_path.join("usaco-tester/tests").join(test_name);
+                        let test_path = test_path.join(DEFAULT_FOLDER_NAME).join("tests").join(test_name);
                         handle_error!(fs::remove_dir_all(test_path), "Failed to remove test directory");
                         println!("Successfully removed test with name \"{}\" ", test_name);
                     } else {
@@ -170,7 +170,7 @@ impl ProgramData {
             dirs::data_local_dir(),
             "Failed to get data directory, not sure why this should happen, look into dirs::data_local_dir() to find more about error"
         );
-        let data_dir = data_dir.join("usaco-tester/");
+        let data_dir = data_dir.join(DEFAULT_FOLDER_NAME);
         for (name, test) in self.tests.iter().filter(|(_, test)| !test.is_empty()) {
             let test_path = data_dir.join("tests").join(name);
             if test_path.exists() {

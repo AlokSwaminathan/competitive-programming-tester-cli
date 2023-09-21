@@ -6,8 +6,8 @@ authors = ["Alok Swaminathan <swaminathanalok@gmail.com>"]
 license = "MIT"
 description = "A command line tool to test competitive programming problems quickly and locally"
 readme = "README.md"
-homepage = "https://github.com/AlokSwaminathan/Competitve-Programming-Tester-CLI"
-repository = "https://github.com/AlokSwaminathan/Competitve-Programming-Tester-CLI"
+homepage = "https://github.com/AlokSwaminathan/competitve-programming-tester-cli"
+repository = "https://github.com/AlokSwaminathan/competitve-programming-tester-cli"
 keywords = ["cli", "competitive"]
 categories = ["command-line-utilities"]
 
