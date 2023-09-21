@@ -80,6 +80,9 @@ There are sub-commands to edit each value in the config, as well as some others.
 `cp-tester remove <test_name>` removes the test with that name  
 `--all` to remove all cases(Default: false)  
 
+### `cp-tester rename` - Renames tests  
+`cp-tester rename <old_name> <new_name>` Renames test "old_name" to "new_name"  
+
 ### `cp-tester run` - Run test on a file  
 `cp-tester run <name> --file <file>`  Valid file extensions are .c, .java, .py, and .cpp   
 `--cases` to specify cases to run (comma separated)(Default: all cases)  

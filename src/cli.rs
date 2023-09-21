@@ -22,19 +22,17 @@ pub struct CliData {
 pub enum Commands {
     #[command(about = "Add a test case", arg_required_else_help = true)]
     ADD(add::AddArgs),
-    #[command(about = "Remove a test case", arg_required_else_help = true)]
-    REMOVE(remove::RemoveArgs),
+    #[command(about = "Work with the config of the program", arg_required_else_help = true)]
+    CONFIG(config::ConfigArgs),
     #[command(about = "List tests, test cases, or test info")]
     LIST(list::ListArgs),
+    #[command(about = "Remove a test case", arg_required_else_help = true)]
+    REMOVE(remove::RemoveArgs),
+    #[command(about = "Rename a test case", arg_required_else_help = true)]
+    RENAME(rename::RenameArgs),
     #[command(
         about = "Run a test case, supports C, C++, Java, and Python. Java and Python use the versions installed on your system",
         arg_required_else_help = true
     )]
     RUN(run::RunArgs),
-    #[command(about = "Rename a test case", arg_required_else_help = true)]
-    RENAME(rename::RenameArgs),
-    #[command(about = "Work with the config of the program", arg_required_else_help = true)]
-    CONFIG(config::ConfigArgs),
-    #[command(about = "Configure tags, which can be used to group tests, and set different config settings for different tests")]
-    TAG,
 }

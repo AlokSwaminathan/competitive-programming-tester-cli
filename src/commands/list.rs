@@ -65,13 +65,19 @@ impl ListArgs {
             }
             None => {
                 println!("Tests:");
-                for (name, test) in tests {
-                    println!("{}", name);
-                    if self.show_io {
-                        let (input_type, output_type) = test.get_io_types();
-                        println!("\tInput: {}, Output: {}", input_type, output_type);
-                    }
-                }
+                let mut test_print_data: Vec<String> = tests
+                    .iter()
+                    .map(|(name, test)| {
+                        let mut print_data = name.clone();
+                        if self.show_io {
+                            let (input_type, output_type) = test.get_io_types();
+                            print_data += &format!("\n\tInput: {}, Output: {}", input_type, output_type);
+                        }
+                        print_data
+                    })
+                    .collect();
+                test_print_data.sort();
+                println!("{}", test_print_data.join("\n"));
                 Ok(())
             }
         }
