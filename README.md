@@ -8,6 +8,8 @@ Supports C, C++, Java, and Python, however, C, Java, and Python use the versions
 At the moment it works with USACO Problems and allows you to download test cases with the problem link (Not the link to the test case download), or the problem ID.  
 If you want to download other types of problems they have to be zipped, and directly extract to test cases that are in the same directory with different file endings, and matching names to show that test cases correspond. You can also just configure the test cases to match those specifications and add a test from a folder.   
 
+FYI, tests on Windows might run slower, and in my testing they ran 40-50x slower than on Mac or Linux. Not sure why this is the case, but considering increasing the time limit if you are running tests on Windows. Regardless, I would reccomend using WSL2 if you are on Windows.
+
 ## Installation
 Installation (requires [Rust](https://www.rust-lang.org/tools/install)):  
 ```

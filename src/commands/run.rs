@@ -268,8 +268,10 @@ impl RunCommand {
 }
 
 #[cfg(target_os = "windows")]
-fn executable_run_command() -> Command{
-    Command::new(".\\output.exe")
+fn executable_run_command() -> Command {
+    let mut tmp = Command::new("cmd");
+    tmp.args(["/c", ".\\output.exe"]);
+    tmp
 }
 #[cfg(not(target_os = "windows"))]
 fn executable_run_command() -> Command {
