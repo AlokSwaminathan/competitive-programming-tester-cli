@@ -226,7 +226,7 @@ impl RunCommand {
                     ));
                 }
                 // Using local address then will use env to make the location the temp dir, so it looks for files in the temp dir
-                let run_command = Command::new("./output");
+                let run_command = executable_run_command();
                 run_command
             }
             FileType::C => {
@@ -234,7 +234,7 @@ impl RunCommand {
                 compile_command.arg("-o").arg(temp_path.join("output"));
                 compile_command.arg(file_path);
                 handle_error!(compile_command.output(), "Failed to compile file");
-                let run_command = Command::new("./output");
+                let run_command = executable_run_command();
                 run_command
             }
             FileType::JAVA => {
@@ -265,4 +265,13 @@ impl RunCommand {
         run_command.stdout(Stdio::piped());
         Ok(RunCommand(run_command))
     }
+}
+
+#[cfg(target_os = "windows")]
+fn executable_run_command() -> Command{
+    Command::new(".\\output.exe")
+}
+#[cfg(not(target_os = "windows"))]
+fn executable_run_command() -> Command {
+    Command::new("./output")
 }
