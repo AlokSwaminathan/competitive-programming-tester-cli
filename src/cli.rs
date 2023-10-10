@@ -7,7 +7,7 @@ use clap::{error::ErrorKind, Args, CommandFactory, Parser, Subcommand};
 #[derive(Parser, Debug)]
 #[command(
     name = "cp-tester",
-    version = "1.0.2",
+    version = env!("CARGO_PKG_VERSION"),
     author = "Alok Swaminathan <swaminathanalok@gmail.com>",
     arg_required_else_help = true,
     about = "A simple command line tool that can be used to easily add tests for Competitive Programming problems and run them.\nSupports C, C++, Java, and Python, but Java and Python use the versions installed on your system and C uses the default version.\nJava files name should be the same as the class name"

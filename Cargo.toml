@@ -1,6 +1,6 @@
 [package]
 name = "cp-tester"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 authors = ["Alok Swaminathan <swaminathanalok@gmail.com>"]
 license = "MIT"
