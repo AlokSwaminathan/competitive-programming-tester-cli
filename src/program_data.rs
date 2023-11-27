@@ -32,7 +32,7 @@ impl ProgramData {
         match &self.cli_data.command {
             Some(Commands::ADD(args)) => {
                 let (input_io, output_io) = handle_error!(args.get_io(), "Failed to get IO Data");
-                let (test_name, test_path) = handle_error!(args.get_test_data(), "Failed to get test data");
+                let (test_name, test_path, submission_data) = handle_error!(args.get_test_data(), "Failed to get test data");
                 if !args.input_type_is_folder() {
                     self.temp_path = Some(test_path.clone());
                 }
@@ -43,6 +43,7 @@ impl ProgramData {
                         args.output_extension.clone(),
                         input_io,
                         output_io,
+                        submission_data,
                     ),
                     "Failed to create test from folder/zip"
                 );
@@ -149,10 +150,10 @@ impl ProgramData {
             }
         } else {
             let main: HashMap<String, EmptyTest> = HashMap::new();
-            let main_file = serde_json::to_string(&main).map_err(|e| "Error serializing test.json in data dir:\n".to_string() + &e.to_string())?;
+            let main_file =
+                serde_json::to_string_pretty(&main).map_err(|e| "Error serializing test.json in data dir:\n".to_string() + &e.to_string())?;
             fs::write(&main_path, main_file).map_err(|e| "Error writing test.json in data dir:\n".to_string() + &e.to_string())?;
         }
-
         Ok(tests)
     }
 

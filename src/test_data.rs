@@ -1,3 +1,4 @@
+use crate::commands::add::SubmissionData;
 use crate::{handle_error, handle_option};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -11,6 +12,7 @@ pub struct Test {
     output_extension: String,
     input_io: IOType,
     output_io: IOType,
+    submission_type: Option<SubmissionData>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -19,6 +21,7 @@ pub struct EmptyTest {
     output_extension: String,
     input_io: IOType,
     output_io: IOType,
+    submission_type: Option<SubmissionData>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -79,13 +82,14 @@ impl Test {
         self.cases.is_empty()
     }
 
-    pub fn from_folder(folder: PathBuf, input_type: String, output_type: String, input_io: IOType, output_io: IOType) -> Result<Test, String> {
+    pub fn from_folder(folder: PathBuf, input_type: String, output_type: String, input_io: IOType, output_io: IOType, submission_type: Option<SubmissionData>) -> Result<Test, String> {
         let mut test = Test {
             cases: HashMap::new(),
             input_extension: input_type,
             output_extension: output_type,
             input_io,
             output_io,
+            submission_type
         };
         test.fill_cases(folder)?;
 
@@ -228,6 +232,7 @@ impl From<EmptyTest> for Test {
             output_extension: empty_test.output_extension,
             input_io: empty_test.input_io,
             output_io: empty_test.output_io,
+            submission_type: empty_test.submission_type
         }
     }
 }
@@ -239,6 +244,7 @@ impl From<&Test> for EmptyTest {
             output_extension: test.output_extension.clone(),
             input_io: test.input_io.clone(),
             output_io: test.output_io.clone(),
+            submission_type: test.submission_type.clone()
         }
     }
 }
