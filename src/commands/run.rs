@@ -38,6 +38,9 @@ pub struct RunArgs {
 
     #[arg(short,long,default_value=Config::get_time_limit(),help="The time limit for each test case, in milliseconds, default is the time limit in the config file, else 1000")]
     pub timeout: u64,
+
+    #[arg(short,long,help="If used, will only run cases that have example in their name (These cases are automatically added for USACO, Codeforces, and AtCoder)")]
+    pub example: bool,
 }
 
 pub enum FileType {
@@ -96,7 +99,7 @@ fn file_exists(file: &str) -> Result<PathBuf, String> {
 impl RunDir {
     pub fn new(test: &Test, args: &RunArgs, config: &Config) -> Result<RunDir, String> {
         let mut test = test.clone();
-        test.set_cases(&args.cases)?;
+        test.set_cases(&args.cases,args.example)?;
         let temp_dir = handle_error!(TempDir::new(), "Failed to create temporary directory");
         let temp_dir_path = temp_dir.path().to_path_buf();
         let run_command = RunCommand::new(&temp_dir_path, &args.file, &args.cpp_ver, &config)?;
@@ -108,7 +111,7 @@ impl RunDir {
             output_file,
             show_input: args.show_input,
             compare_output: args.compare_output,
-            test: test,
+            test,
             unicode_output: config.get_unicode_output(),
             timeout: args.timeout,
         })

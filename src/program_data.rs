@@ -32,7 +32,7 @@ impl ProgramData {
         match &self.cli_data.command {
             Some(Commands::ADD(args)) => {
                 let (input_io, output_io) = handle_error!(args.get_io(), "Failed to get IO Data");
-                let (test_name, test_path, submission_data) = handle_error!(args.get_test_data(), "Failed to get test data");
+                let (test_name, test_path, submission_data, description) = handle_error!(args.get_test_data(), "Failed to get test data");
                 if !args.input_type_is_folder() {
                     self.temp_path = Some(test_path.clone());
                 }
@@ -44,6 +44,7 @@ impl ProgramData {
                         input_io,
                         output_io,
                         submission_data,
+                        description
                     ),
                     "Failed to create test from folder/zip"
                 );
@@ -79,6 +80,9 @@ impl ProgramData {
                 self.write_data()
             }
             Some(Commands::RUN(args)) => {
+                if args.example && args.cases.is_some() {
+                    return Err("Cannot run example and specified cases at the same time".to_string());
+                }
                 let test_name = &args.test;
                 if !self.tests.contains_key(test_name) {
                     return Err(format!("Test with name \"{}\" doesn't exist", test_name));
