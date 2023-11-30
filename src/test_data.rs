@@ -7,12 +7,13 @@ use std::path::PathBuf;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Test {
-    cases: HashMap<String, TestCase>,
-    input_extension: String,
-    output_extension: String,
-    input_io: IOType,
-    output_io: IOType,
-    submission_type: Option<SubmissionData>,
+    pub(crate) cases: HashMap<String, TestCase>,
+    pub(crate) input_extension: String,
+    pub(crate) output_extension: String,
+    pub(crate) input_io: IOType,
+    pub(crate) output_io: IOType,
+    pub(crate) submission_data: Option<SubmissionData>,
+    pub(crate) description: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -21,13 +22,14 @@ pub struct EmptyTest {
     output_extension: String,
     input_io: IOType,
     output_io: IOType,
-    submission_type: Option<SubmissionData>,
+    submission_data: Option<SubmissionData>,
+    description: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TestCase {
-    input: String,
-    output: String,
+    pub(crate) input: String,
+    pub(crate) output: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -37,31 +39,12 @@ pub enum IOType {
 }
 
 impl Test {
-    pub fn print_case(&self, case_name: &String, show_input: bool, show_output: bool) -> Result<(), String> {
-        let test_case = handle_option!(self.cases.get(case_name), format!("Test case with name \"{}\" does not exist", case_name));
-        if show_input || show_output {
-            println!("Test Case {}:", case_name);
-            if show_input {
-                println!("\tInput({}.{}):", case_name, &self.input_extension);
-                println!(
-                    "{}",
-                    test_case.input.lines().map(|l| format!("\t\t{}", l)).collect::<Vec<String>>().join("\n")
-                );
-            }
-            if show_output {
-                println!("\tOutput({}.{}):", case_name, &self.output_extension);
-                println!(
-                    "{}",
-                    test_case.output.lines().map(|l| format!("\t\t{}", l)).collect::<Vec<String>>().join("\n")
-                );
-            }
+    pub fn get_submission_type(&self) -> String {
+        if let Some(submission_data) = &self.submission_data {
+            format!("{}", submission_data.submission_type)
         } else {
-            println!(
-                "Name: {0} (Input: {0}.{1}, Output: {0}.{2})",
-                case_name, &self.input_extension, &self.output_extension
-            );
+            "None".to_string()
         }
-        Ok(())
     }
 
     pub fn get_sorted_case_names(&self) -> Vec<&String> {
@@ -72,9 +55,8 @@ impl Test {
             case_int.sort();
             case_names.sort_by_key(|c| c.parse::<i32>().unwrap());
         } else {
-            case_names.sort();
+            case_names.sort_by_key(|c| c.parse::<i32>().unwrap_or((c.chars().next().unwrap() as i32) - 4000));
         }
-
         case_names
     }
 
@@ -82,14 +64,23 @@ impl Test {
         self.cases.is_empty()
     }
 
-    pub fn from_folder(folder: PathBuf, input_type: String, output_type: String, input_io: IOType, output_io: IOType, submission_type: Option<SubmissionData>) -> Result<Test, String> {
+    pub fn from_folder(
+        folder: PathBuf,
+        input_type: String,
+        output_type: String,
+        input_io: IOType,
+        output_io: IOType,
+        submission_type: Option<SubmissionData>,
+        description: Option<String>,
+    ) -> Result<Test, String> {
         let mut test = Test {
             cases: HashMap::new(),
             input_extension: input_type,
             output_extension: output_type,
             input_io,
             output_io,
-            submission_type
+            submission_data: submission_type,
+            description,
         };
         test.fill_cases(folder)?;
 
@@ -155,7 +146,7 @@ impl Test {
         Ok(())
     }
 
-    pub fn set_cases(&mut self, cases: &Option<Vec<String>>) -> Result<(), String> {
+    pub fn set_cases(&mut self, cases: &Option<Vec<String>>, example: bool) -> Result<(), String> {
         if let Some(cases) = cases {
             let mut new_cases = HashMap::new();
             for case in cases {
@@ -166,6 +157,16 @@ impl Test {
                 }
             }
             self.cases = new_cases;
+        } else if example {
+            let mut new_cases = HashMap::new();
+            for (name, test_case) in &self.cases {
+                if name.to_lowercase().contains("example") {
+                    new_cases.insert(name.clone(), test_case.clone());
+                }
+            }
+            if new_cases.is_empty() {
+                return Err("No example test cases found(Test cases with \"example\" in their name with any capitalization)".to_string());
+            }
         }
         Ok(())
     }
@@ -232,7 +233,8 @@ impl From<EmptyTest> for Test {
             output_extension: empty_test.output_extension,
             input_io: empty_test.input_io,
             output_io: empty_test.output_io,
-            submission_type: empty_test.submission_type
+            submission_data: empty_test.submission_data,
+            description: empty_test.description,
         }
     }
 }
@@ -244,7 +246,8 @@ impl From<&Test> for EmptyTest {
             output_extension: test.output_extension.clone(),
             input_io: test.input_io.clone(),
             output_io: test.output_io.clone(),
-            submission_type: test.submission_type.clone()
+            submission_data: test.submission_data.clone(),
+            description: test.description.clone(),
         }
     }
 }
